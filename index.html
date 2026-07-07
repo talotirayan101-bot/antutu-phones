@@ -27,7 +27,7 @@
 
     <h1>AnTuTu Smartphone Live Ranking</h1>
     <div class="container">
-        <div id="loading">⏳ Please wait, fetching live data from official website...</div>
+        <div id="loading">⏳ Loading live database...</div>
         
         <table id="target-table" style="display: none;">
             <thead>
@@ -43,61 +43,33 @@
     </div>
 
     <script>
-        const targetUrl = "https://antutu.com/web/ranking";
-        const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(targetUrl);
-
-        fetch(proxyUrl)
+        fetch('data.json')
             .then(response => {
-                if (!response.ok) throw new Error("Connection failed");
+                if (!response.ok) throw new Error("Data file not found");
                 return response.json();
             })
             .then(data => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, "text/html");
-                
-                // استهداف عناصر القائمة بناءً على الهيكلية الجديدة لصفحة الويب المخصصة للهواتف
-                const rankItems = doc.querySelectorAll('.rank-list li, .ranking-list li, ul li, tr');
+                const phones = data["2026"];
                 const tbody = document.getElementById('data-rows');
                 
-                let count = 0;
-                if (rankItems && rankItems.length > 0) {
-                    rankItems.forEach((item) => {
-                        try {
-                            // البحث عن اسم الهاتف والنقاط الحية داخل السطور
-                            const nameEl = item.querySelector('.name') || item.querySelector('.title') || item.querySelector('td:nth-child(2)');
-                            const scoreEl = item.querySelector('.score') || item.querySelector('.total-score') || item.querySelector('td:nth-child(3)');
-                            
-                            if (nameEl && scoreEl) {
-                                const name = nameEl.textContent.trim();
-                                const score = scoreEl.textContent.trim();
-                                
-                                // التأكد من أن العنصر يحتوي على بيانات حقيقية وليس مجرد عناوين فارغة
-                                if (name && score && !isNaN(score.replace(/,/g, ''))) {
-                                    count++;
-                                    const row = `<tr>
-                                        <td>${count}</td>
-                                        <td>${name}</td>
-                                        <td>${score}</td>
-                                    </tr>`;
-                                    tbody.innerHTML += row;
-                                }
-                            }
-                        } catch (e) {
-                            console.error(e);
-                        }
+                if (phones && phones.length > 0) {
+                    phones.forEach(phone => {
+                        const row = `<tr>
+                            <td>${phone.rank}</td>
+                            <td>${phone.name}</td>
+                            <td>${phone.score}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
                     });
-                }
-
-                if (count > 0) {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('target-table').style.display = 'table';
                 } else {
-                    throw new Error("No live ranking elements matching the page structure.");
+                    throw new Error("No data available");
                 }
             })
             .catch(err => {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-msg').innerText = "Error loading live data. Please refresh the page.";
+                document.getElementById('error-msg').innerText = "Error loading database. Please trigger GitHub Actions to generate data.";
                 console.error(err);
             });
     </script>
