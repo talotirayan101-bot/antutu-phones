@@ -1,1 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ترتيب هواتف AnTuTu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 { color: #00ffcc; }
+        .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #333; text-align: center; }
+        th { background-color: #00ffcc; color: #121212; }
+        tr:nth-child(even) { background-color: #2a2a2a; }
+        .error { color: #ff3333; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>ترتيب أقوى هواتف الأندرويد لعام 2026</h1>
+    <div class="container">
+        <div id="loading">جاري تحميل البيانات الحية...</div>
+        <table id="target-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>الترتيب</th>
+                    <th>اسم الهاتف</th>
+                    <th>النقاط</th>
+                </tr>
+            </thead>
+            <tbody id="data-rows"></tbody>
+        </table>
+        <div id="error-msg" class="error"></div>
+    </div>
+
+    <script>
+        fetch('data.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('لم يتم العثور على ملف البيانات بعد.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const yearData = data["2026"];
+                const loadingEl = document.getElementById('loading');
+                const tableEl = document.getElementById('target-table');
+                const tbody = document.getElementById('data-rows');
+
+                if (yearData && yearData.length > 0) {
+                    loadingEl.style.display = 'none';
+                    tableEl.style.display = 'table';
+                    
+                    yearData.forEach(item => {
+                        const row = `<tr>
+                            <td>${item.rank}</td>
+                            <td>${item.name}</td>
+                            <td>${item.score}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                } else {
+                    throw new Error('الملف فارغ أو غير متوافق.');
+                }
+            })
+            .catch(err => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-msg').innerText = 'حدث خطأ أثناء عرض البيانات: ' + err.message;
+            });
+    </script>
+</body>
+</html>
 
