@@ -1,0 +1,29 @@
+{
+    "2026": [
+        {
+            "rank": 1,
+            "name": "ROG Phone 10 Pro (Snapdragon 8 Gen 5)",
+            "score": "3,120,500"
+        },
+        {
+            "rank": 2,
+            "name": "Red Magic 11 Pro",
+            "score": "3,085,000"
+        },
+        {
+            "rank": 3,
+            "name": "Xiaomi 16 Ultra",
+            "score": "2,990,000"
+        },
+        {
+            "rank": 4,
+            "name": "Samsung Galaxy S26 Ultra",
+            "score": "2,950,000"
+        },
+        {
+            "rank": 5,
+            "name": "Generic Budget Device",
+            "score": "180,000"
+        }
+    ]
+}
