@@ -27,7 +27,7 @@
 
     <h1>AnTuTu Smartphone Live Ranking</h1>
     <div class="container">
-        <div id="loading">⏳ Loading live database...</div>
+        <div id="loading">⏳ Please wait, fetching live data from official website...</div>
         
         <table id="target-table" style="display: none;">
             <thead>
@@ -43,33 +43,59 @@
     </div>
 
     <script>
-        fetch('data.json')
+        const targetUrl = "https://antutu.com/web/ranking";
+        const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(targetUrl);
+
+        fetch(proxyUrl)
             .then(response => {
-                if (!response.ok) throw new Error("Data file not found");
+                if (!response.ok) throw new Error("Network connection failed");
                 return response.json();
             })
             .then(data => {
-                const phones = data["2026"];
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, "text/html");
+                
+                // استهداف دقيق جداً للعناصر بناءً على الكود المصدري لصفحة الأندرويد الحالية
+                const rankItems = doc.querySelectorAll('.ranking-list li, .rank-list li, .rank-list-ul li, [class*="rank"] li');
                 const tbody = document.getElementById('data-rows');
                 
-                if (phones && phones.length > 0) {
-                    phones.forEach(phone => {
-                        const row = `<tr>
-                            <td>${phone.rank}</td>
-                            <td>${phone.name}</td>
-                            <td>${phone.score}</td>
-                        </tr>`;
-                        tbody.innerHTML += row;
+                let count = 0;
+                if (rankItems && rankItems.length > 0) {
+                    rankItems.forEach((item) => {
+                        try {
+                            const nameEl = item.querySelector('.name') || item.querySelector('.title') || item.querySelector('div:nth-child(2)');
+                            const scoreEl = item.querySelector('.score') || item.querySelector('.total-score') || item.querySelector('.score-num');
+                            
+                            if (nameEl && scoreEl) {
+                                const name = nameEl.textContent.trim();
+                                const score = scoreEl.textContent.trim();
+                                
+                                if (name && score && score !== "0") {
+                                    count++;
+                                    const row = `<tr>
+                                        <td>${count}</td>
+                                        <td>${name}</td>
+                                        <td>${score}</td>
+                                    </tr>`;
+                                    tbody.innerHTML += row;
+                                }
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
                     });
+                }
+
+                if (count > 0) {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('target-table').style.display = 'table';
                 } else {
-                    throw new Error("No data available");
+                    throw new Error("Could not parse data fields from live response");
                 }
             })
             .catch(err => {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-msg').innerText = "Error loading database. Please trigger GitHub Actions to generate data.";
+                document.getElementById('error-msg').innerText = "Live fetch failed or blocked by Cloudflare. Please check proxy stability.";
                 console.error(err);
             });
     </script>
