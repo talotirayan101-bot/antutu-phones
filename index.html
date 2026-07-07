@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ترتيب هواتف AnTuTu</title>
+    <title>AnTuTu Live Ranking</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,26 +13,28 @@
             padding: 20px;
             margin: 0;
         }
-        h1 { color: #00ffcc; }
+        h1 { color: #ff4500; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 12px; border: 1px solid #333; text-align: center; }
-        th { background-color: #00ffcc; color: #121212; }
+        th { background-color: #ff4500; color: #ffffff; }
         tr:nth-child(even) { background-color: #2a2a2a; }
+        #loading { font-size: 18px; color: #ffcc00; margin: 20px 0; font-weight: bold; }
         .error { color: #ff3333; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <h1>ترتيب أقوى هواتف الأندرويد لعام 2026</h1>
+    <h1>ترتيب هواتف AnTuTu (بث حي مباشر)</h1>
     <div class="container">
-        <div id="loading">جاري تحميل البيانات الحية...</div>
+        <div id="loading">⏳ انتظر من فضلك، جاري جلب البيانات الحية من الموقع الرسمي الآن...</div>
+        
         <table id="target-table" style="display: none;">
             <thead>
                 <tr>
                     <th>الترتيب</th>
                     <th>اسم الهاتف</th>
-                    <th>النقاط</th>
+                    <th>النقاط الحالية</th>
                 </tr>
             </thead>
             <tbody id="data-rows"></tbody>
@@ -41,40 +43,55 @@
     </div>
 
     <script>
-        fetch('data.json')
+        const targetUrl = "https://www.antutu.com/en/ranking/rank1.htm";
+        const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(targetUrl);
+
+        fetch(proxyUrl)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('لم يتم العثور على ملف البيانات بعد.');
-                }
+                if (!response.ok) throw new Error("Connection failed");
                 return response.json();
             })
             .then(data => {
-                const yearData = data["2026"];
-                const loadingEl = document.getElementById('loading');
-                const tableEl = document.getElementById('target-table');
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, "text/html");
+                const rankItems = doc.querySelectorAll('.rank-list li') || doc.querySelectorAll('ul.rank-list-ul li') || doc.querySelectorAll('.b-line');
                 const tbody = document.getElementById('data-rows');
-
-                if (yearData && yearData.length > 0) {
-                    loadingEl.style.display = 'none';
-                    tableEl.style.display = 'table';
-                    
-                    yearData.forEach(item => {
-                        const row = `<tr>
-                            <td>${item.rank}</td>
-                            <td>${item.name}</td>
-                            <td>${item.score}</td>
-                        </tr>`;
-                        tbody.innerHTML += row;
+                
+                if (rankItems && rankItems.length > 0) {
+                    let count = 0;
+                    rankItems.forEach((item) => {
+                        try {
+                            const nameEl = item.querySelector('.name') || item.querySelector('.title') || item.querySelector('.con .title');
+                            const scoreEl = item.querySelector('.score');
+                            
+                            if (nameEl && scoreEl) {
+                                count++;
+                                const name = nameEl.textContent.trim();
+                                const score = scoreEl.textContent.trim();
+                                
+                                const row = `<tr>
+                                    <td>${count}</td>
+                                    <td>${name}</td>
+                                    <td>${score}</td>
+                                </tr>`;
+                                tbody.innerHTML += row;
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
                     });
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('target-table').style.display = 'table';
                 } else {
-                    throw new Error('الملف فارغ أو غير متوافق.');
+                    throw new Error("Structure changed");
                 }
             })
             .catch(err => {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-msg').innerText = 'حدث خطأ أثناء عرض البيانات: ' + err.message;
+                document.getElementById('error-msg').innerText = "حدث خطأ أثناء جلب البيانات المباشرة. تأكد من تحديث الصفحة.";
+                console.error(err);
             });
     </script>
 </body>
 </html>
-
