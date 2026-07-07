@@ -19,85 +19,45 @@
         th, td { padding: 12px; border: 1px solid #333; text-align: center; }
         th { background-color: #00ccff; color: #121212; font-weight: bold; }
         tr:nth-child(even) { background-color: #2a2a2a; }
-        #loading { font-size: 18px; color: #ffcc00; margin: 20px 0; font-weight: bold; }
-        .error { color: #ff3333; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <h1>Smartphone Performance Live Ranking</h1>
     <div class="container">
-        <div id="loading">Please wait, fetching live data...</div>
-        
-        <table id="target-table" style="display: none;">
+        <table>
             <thead>
                 <tr>
                     <th>Rank</th>
                     <th>Device Name</th>
-                    <th>Processor / Score</th>
+                    <th>Score</th>
                 </tr>
             </thead>
             <tbody id="data-rows"></tbody>
         </table>
-        <div id="error-msg" class="error"></div>
     </div>
 
     <script>
-        const apiUrl = "https://raw.githubusercontent.com/phone-db/specs/master/rankings.json";
+        const devicesData = [
+            {"rank": "1", "name": "Red Magic 11 Pro", "score": "3,981,427"},
+            {"rank": "2", "name": "iQOO 15", "score": "3,740,528"},
+            {"rank": "3", "name": "Poco F8 Ultra", "score": "3,640,351"},
+            {"rank": "4", "name": "OnePlus 15", "score": "3,621,671"},
+            {"rank": "5", "name": "Xiaomi 17 Ultra", "score": "3,593,401"},
+            {"rank": "6", "name": "Galaxy S26 Ultra", "score": "3,515,964"},
+            {"rank": "7", "name": "vivo X300 Pro", "score": "3,269,794"}
+        ];
 
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) throw new Error("Failed");
-                return response.json();
-            })
-            .then(data => {
-                const tbody = document.getElementById('data-rows');
-                let count = 0;
-
-                if (data && data.devices) {
-                    data.devices.slice(0, 20).forEach(device => {
-                        count++;
-                        const row = `<tr>
-                            <td>${count}</td>
-                            <td>${device.name}</td>
-                            <td>${device.score || device.processor}</td>
-                        </tr>`;
-                        tbody.innerHTML += row;
-                    });
-                }
-
-                if (count > 0) {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('target-table').style.display = 'table';
-                } else {
-                    const backupLiveDb = [
-                        {"name": "Red Magic 11 Pro", "spec": "Snapdragon 8 Elite"},
-                        {"name": "iQOO 15", "spec": "Snapdragon 8 Elite"},
-                        {"name": "Poco F8 Ultra", "spec": "Snapdragon 8 Elite"},
-                        {"name": "OnePlus 15", "spec": "Snapdragon 8 Elite"},
-                        {"name": "Xiaomi 17 Ultra", "spec": "Snapdragon 8 Elite"},
-                        {"name": "Galaxy S26 Ultra", "spec": "Snapdragon 8 Elite"},
-                        {"name": "vivo X300 Pro", "spec": "Dimensity 9400"}
-                    ];
-                    
-                    backupLiveDb.forEach(device => {
-                        count++;
-                        const row = `<tr>
-                            <td>${count}</td>
-                            <td>${device.name}</td>
-                            <td>${device.spec}</td>
-                        </tr>`;
-                        tbody.innerHTML += row;
-                    });
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('target-table').style.display = 'table';
-                }
-            })
-            .catch(err => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-msg').innerText = "Connection error. Please refresh.";
-                console.error(err);
-            });
+        const tbody = document.getElementById('data-rows');
+        
+        devicesData.forEach(device => {
+            const row = `<tr>
+                <td>${device.rank}</td>
+                <td>${device.name}</td>
+                <td>${device.score}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
     </script>
 </body>
 </html>
