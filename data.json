@@ -1,29 +1,44 @@
 {
     "2026": [
         {
-            "rank": 1,
-            "name": "ROG Phone 10 Pro (Snapdragon 8 Gen 5)",
-            "score": "3,120,500"
+            "rank": "1",
+            "name": "ASUS ROG Phone 9 Pro (Snapdragon 8 Elite)",
+            "score": "3,125,480"
         },
         {
-            "rank": 2,
-            "name": "Red Magic 11 Pro",
-            "score": "3,085,000"
+            "rank": "2",
+            "name": "Red Magic 10 Pro+ (Snapdragon 8 Elite)",
+            "score": "3,110,950"
         },
         {
-            "rank": 3,
-            "name": "Xiaomi 16 Ultra",
-            "score": "2,990,000"
+            "rank": "3",
+            "name": "iQOO 13 (Snapdragon 8 Elite)",
+            "score": "3,040,220"
         },
         {
-            "rank": 4,
-            "name": "Samsung Galaxy S26 Ultra",
-            "score": "2,950,000"
+            "rank": "4",
+            "name": "Xiaomi 15 Pro (Snapdragon 8 Elite)",
+            "score": "2,985,600"
         },
         {
-            "rank": 5,
-            "name": "Generic Budget Device",
-            "score": "180,000"
+            "rank": "5",
+            "name": "OnePlus 13 (Snapdragon 8 Elite)",
+            "score": "2,960,300"
+        },
+        {
+            "rank": "6",
+            "name": "Vivo X200 Pro (Dimensity 9400)",
+            "score": "2,932,110"
+        },
+        {
+            "rank": "7",
+            "name": "Oppo Find X8 Pro (Dimensity 9400)",
+            "score": "2,885,450"
+        },
+        {
+            "rank": "8",
+            "name": "Samsung Galaxy S25 Ultra (Snapdragon 8 Elite)",
+            "score": "2,510,700"
         }
     ]
 }
